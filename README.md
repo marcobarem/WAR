@@ -109,12 +109,28 @@ def heuristica_manhattan(atual, destino):
     return abs(atual[0] - destino[0]) + abs(atual[1] - destino[1])
 
 def obter_vizinhos(labirinto, posicao):
-    # Função para obter vizinhos válidos (cima, baixo, esquerda, direita)
-    pass
+    linhas, colunas = len(labirinto), len(labirinto[0])
+    x, y = posicao
+    vizinhos = []
+    
+    movimentos = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # cima, baixo, esquerda, direita
+    
+    for dx, dy in movimentos:
+        nx, ny = x + dx, y + dy
+        # Verifica se o vizinho está dentro dos limites e não é uma parede
+        if 0 <= nx < linhas and 0 <= ny < colunas and labirinto[nx][ny] != 1:
+            vizinhos.append((nx, ny))
+    
+    return vizinhos
 
 def reconstruir_caminho(caminhos, inicio, destino):
-    # Função para reconstruir o caminho do início ao destino
-    pass
+    caminho = []
+    atual = destino
+    while atual is not None:
+        caminho.append(atual)
+        atual = caminhos[atual]
+    caminho.reverse()  # Inverte o caminho para começar do início
+    return caminho if caminho[0] == inicio else None
 
 ```
 
@@ -124,3 +140,63 @@ Explicação do Código
     -*heuristica_manhattan*: Calcula a distância de Manhattan entre o estado atual e o destino.
     -*obter_vizinhos*: Retorna vizinhos válidos ao redor da posição atual.
     -*reconstruir_caminho*: Traça o caminho do destino até o início.
+
+# Questão 3:
+
+## Implementação de IA para o Jogo WAR
+
+Este projeto se baseia na modelagem de componentes de IA para o jogo de estratégia WAR. Utilizaremos os conceitos de descrições de estado, geradores de movimento, testes de terminal, funções de utilidade e funções de avaliação para definir e implementar um agente inteligente que possa tomar decisões estratégicas no jogo.
+Descrição do Jogo WAR
+
+WAR é um jogo de estratégia em que os jogadores competem para conquistar territórios e eliminar exércitos adversários. Cada jogador começa com um número de territórios e unidades militares e deve escolher cuidadosamente onde atacar e reforçar.
+Componentes de Busca para o Jogo WAR
+1. Descrição do Estado
+
+No jogo WAR, um estado representa a situação atual do tabuleiro, incluindo:
+
+    Territórios ocupados: Quais territórios pertencem a cada jogador.
+    Exércitos em cada território: Número de tropas em cada território controlado.
+    Objetivos secretos e conquistas: Cada jogador pode ter objetivos próprios, o que também influencia a estratégia da IA.
+
+2. Geradores de Movimento
+
+O gerador de movimento define as ações que a IA pode tomar em cada turno. Em WAR, as ações podem incluir:
+
+    Ataque: A IA pode atacar territórios vizinhos ocupados por oponentes, desde que tenha tropas suficientes para um ataque (mínimo de 2 tropas).
+    Reforço: Redistribuir ou adicionar tropas aos territórios ocupados no início do turno.
+    Movimento: Mover tropas entre territórios próprios adjacentes para fortalecer fronteiras.
+
+Para cada ação, a IA avalia as probabilidades de sucesso com base nas tropas de ataque e defesa e escolhe as ações mais vantajosas de acordo com sua função de avaliação.
+3. Teste de Terminal
+
+O teste de terminal determina quando o jogo termina, ou seja, quando um jogador alcança seu objetivo ou conquista todos os territórios:
+
+    Vitória: A IA atinge seu objetivo secreto ou conquista o mundo inteiro.
+    Derrota: A IA é eliminada ou perde todos os seus territórios.
+
+4. Função de Utilidade
+
+A função de utilidade é usada para medir a "vantagem" do estado atual para a IA. Para o jogo WAR, a função de utilidade pode considerar:
+
+    Número de territórios controlados: Mais territórios representam mais poder.
+    Distribuição de tropas: Estados com maior número de tropas são mais vantajosos.
+    Proximidade aos objetivos: O progresso em direção ao objetivo secreto aumenta o valor do estado.    
+
+ Exemplo de Função de Utilidade:
+U(s)=(T×w1)+(P×w2)+(O×w3)
+U(s)=(T×w1​)+(P×w2​)+(O×w3​)
+
+onde:
+
+    TT = número de territórios controlados
+    PP = número total de tropas
+    OO = proximidade ao objetivo secreto
+    w1,w2,w3w1​,w2​,w3​ = pesos para balancear cada fator de acordo com a estratégia desejada
+
+5. Função de Avaliação
+
+A função de avaliação ajuda a IA a escolher entre diferentes estados intermediários antes do fim do jogo. Em WAR, ela avalia estados considerando:
+
+    Força relativa: Avalia o poder militar da IA em comparação com seus oponentes.
+    Posição estratégica: Priorização de territórios que são adjacentes a territórios controlados por oponentes.
+    Conquista de Continentes: Completar a posse de um continente garante bônus, o que aumenta o valor estratégico.   
